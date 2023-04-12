@@ -27,7 +27,7 @@ export default function SelectComponent({
 
   return (
     <div style={styles}>
-      <FormControl sx={{ m: 1 }}>
+      <FormControl>
         <InputLabel htmlFor="grouped-native-select">{label}</InputLabel>
         <Select
           native
