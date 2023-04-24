@@ -1,28 +1,58 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-// import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import axios, { AxiosResponse } from "axios";
+import { API } from "../../../api/API";
+import { useForm } from "react-hook-form";
+import { AuthResponse } from "../../models/response/AuthResponse";
 
 const theme = createTheme();
 
+enum FormInputs {
+  phone = "phone",
+  password = "password",
+}
+
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+  async function login(
+    number: string,
+    password: string
+  ): Promise<AxiosResponse<AuthResponse>> {
+    return API.post<AuthResponse>("/drivers/login", { number, password });
+  }
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const navigate = useNavigate();
+  const [user, setUser] = useState({
+    phone: "",
+    password: "",
+  });
+
+  const onSubmit = async (event: any) => {
+    try {
+      const res = await API.post("/drivers/login", event);
+
+      localStorage.setItem("access", JSON.stringify(res.data.access));
+      localStorage.setItem("refresh", JSON.stringify(res.data.refresh));
+
+      navigate("/");
+    } catch {
+      console.log("error");
+    }
   };
 
   return (
@@ -45,7 +75,7 @@ export default function SignIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -53,21 +83,28 @@ export default function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Номер телефона"
-              name="email"
-              autoComplete="email"
+              label="Номер телефона 996..."
+              placeholder="996..."
               autoFocus
+              {...register(FormInputs.phone, {
+                required: "Это поле обязательное!",
+              })}
+              helperText={errors[FormInputs.phone]?.message as string}
+              error={!!errors[FormInputs.phone]?.message}
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="password"
               label="Пароль"
               type="password"
               id="password"
               autoComplete="current-password"
+              {...register(FormInputs.password, {
+                required: "Это поле обязательное!",
+              })}
+              helperText={errors[FormInputs.password]?.message as string}
+              error={!!errors[FormInputs.password]?.message}
             />
             <Button
               type="submit"
@@ -79,12 +116,20 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link
+                  href="#"
+                  variant="body2"
+                  style={{ textDecoration: "none" }}
+                >
                   Забыли пароль?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/registration" variant="body2">
+                <Link
+                  href="/registration"
+                  variant="body2"
+                  style={{ textDecoration: "none" }}
+                >
                   {"Создать новый аккаунт?"}
                 </Link>
               </Grid>

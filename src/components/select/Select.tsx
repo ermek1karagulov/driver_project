@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import { ChangeHandler } from "react-hook-form";
 
 interface IOption {
   name: string;
@@ -12,8 +13,10 @@ interface IProps {
   options: IOption[];
   label: string;
   defaultValue: string;
-  onChange: (v: string) => void;
+  onChange: any;
   styles: any;
+  helperText: any;
+  error: any;
 }
 
 export default function SelectComponent({
@@ -30,15 +33,16 @@ export default function SelectComponent({
       <FormControl>
         <InputLabel htmlFor="grouped-native-select">{label}</InputLabel>
         <Select
+          multiple
           native
           id={`grouped-native-select ${label}`}
           label="Grouping"
           defaultValue={defaultValue}
-          onChange={(e) => onChange(e.target.value)}
+          {...onChange}
         >
           <optgroup>
             {options.map((option, i) => (
-              <option key={option.name} value={i}>
+              <option key={option.name} value={option.name}>
                 {option.name}
               </option>
             ))}
