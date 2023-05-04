@@ -3,10 +3,8 @@ import CardDriver from "../driver-profile/Card";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { fetchDriver } from "../../store/driver/action";
 import { useDispatch } from "react-redux";
-import axios from "axios";
 import { API } from "../../api/API";
 import AppBarr from "../../components/appBar/AppBar";
-import { dark } from "@mui/material/styles/createPalette";
 
 const MainPage = () => {
   const dispatch = useDispatch();
